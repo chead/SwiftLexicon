@@ -13,7 +13,7 @@ protocol LexiconFieldTypeRepresentable: Decodable {
 
 protocol LexiconSchemaRepresentable: Decodable {}
 
-public struct LexiconNullField: LexiconFieldTypeRepresentable {
+public struct LexiconNullField: LexiconFieldTypeRepresentable, Hashable {
     private enum CodingKeys: CodingKey {
         case description
     }
@@ -21,7 +21,7 @@ public struct LexiconNullField: LexiconFieldTypeRepresentable {
     public let description: String?
 }
 
-public struct LexiconBooleanField: LexiconFieldTypeRepresentable {
+public struct LexiconBooleanField: LexiconFieldTypeRepresentable, Hashable {
     private enum CodingKeys: CodingKey {
         case description
         case `default`
@@ -33,7 +33,7 @@ public struct LexiconBooleanField: LexiconFieldTypeRepresentable {
     public let const: Bool?
 }
 
-public struct LexiconIntegerField: LexiconFieldTypeRepresentable {
+public struct LexiconIntegerField: LexiconFieldTypeRepresentable, Hashable {
     public let description: String?
     public let minimum: Int?
     public let maxmimum: Int?
@@ -42,7 +42,7 @@ public struct LexiconIntegerField: LexiconFieldTypeRepresentable {
     public let const: Int?
 }
 
-public struct LexiconStringField: LexiconFieldTypeRepresentable {
+public struct LexiconStringField: LexiconFieldTypeRepresentable, Hashable {
     public let description: String?
     public let format: String?
     public let maxLength: Int?
@@ -55,17 +55,40 @@ public struct LexiconStringField: LexiconFieldTypeRepresentable {
     public let const: String?
 }
 
-public struct LexiconBytesField: LexiconFieldTypeRepresentable {
+public struct LexiconBytesField: LexiconFieldTypeRepresentable, Hashable {
     public let description: String?
     public let maxLength: Int?
     public let minLength: Int?
 }
 
-public struct LexiconCIDLinkField: LexiconFieldTypeRepresentable {
+public struct LexiconCIDLinkField: LexiconFieldTypeRepresentable, Hashable {
     public let description: String?
 }
 
-public enum LexiconSchemaField: Decodable {
+public enum LexiconSchemaField: Decodable, Hashable {
+    public static func == (lhs: LexiconSchemaField, rhs: LexiconSchemaField) -> Bool {
+        switch(lhs, rhs) {
+        case(ref(let lhsRefField), ref(let rhsRefField)):
+            return lhsRefField == rhsRefField
+
+        case(union(let lhsUnionField), union(let rhsUnionField)):
+            return lhsUnionField == rhsUnionField
+
+        default:
+            return false
+        }
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        switch self {
+        case .ref(let refField):
+            hasher.combine(refField)
+
+        case .union(let unionField):
+            hasher.combine(unionField)
+        }
+    }
+
     private enum FieldType: String, Decodable {
         case ref
         case union
@@ -93,14 +116,14 @@ public enum LexiconSchemaField: Decodable {
     }
 }
 
-public struct LexiconArrayField: LexiconFieldTypeRepresentable {
+public struct LexiconArrayField: LexiconFieldTypeRepresentable, Hashable {
     public let description: String?
     public let items: LexiconSchemaField
     public let maxLength: Int?
     public let minLength: Int?
 }
 
-public struct LexiconObjectField: LexiconFieldTypeRepresentable, LexiconSchemaRepresentable {
+public struct LexiconObjectField: LexiconFieldTypeRepresentable, LexiconSchemaRepresentable, Hashable {
     public let description: String?
     public let properties: [String : LexiconFieldType]
     public let required: [String]?
@@ -113,7 +136,7 @@ public struct LexiconBlobField: LexiconFieldTypeRepresentable {
     public let maxSize: Int?
 }
 
-public struct LexiconParamsField: LexiconFieldTypeRepresentable {
+public struct LexiconParamsField: LexiconFieldTypeRepresentable, Hashable {
     public let description: String?
     public let required: [String]?
 
@@ -121,26 +144,115 @@ public struct LexiconParamsField: LexiconFieldTypeRepresentable {
     public let properties: [String : LexiconFieldType]
 }
 
-public struct LexiconTokenField: LexiconFieldTypeRepresentable {
+public struct LexiconTokenField: LexiconFieldTypeRepresentable, Hashable {
     public let description: String?
 }
 
-public struct LexiconRefField: LexiconFieldTypeRepresentable, LexiconSchemaRepresentable {
+public struct LexiconRefField: LexiconFieldTypeRepresentable, LexiconSchemaRepresentable, Hashable {
     public let description: String?
     public let ref: String
 }
 
-public struct LexiconUnionField: LexiconFieldTypeRepresentable, LexiconSchemaRepresentable {
+public struct LexiconUnionField: LexiconFieldTypeRepresentable, LexiconSchemaRepresentable, Hashable {
     public let description: String?
     public let refs: [String]
     public let closed: Bool?
 }
 
-public struct LexiconUnknownField: LexiconFieldTypeRepresentable {
+public struct LexiconUnknownField: LexiconFieldTypeRepresentable, Hashable {
     public let description: String?
 }
 
-public enum LexiconFieldType: Decodable {
+public enum LexiconFieldType: Decodable, Hashable {
+    public static func == (lhs: LexiconFieldType, rhs: LexiconFieldType) -> Bool {
+        switch(lhs, rhs) {
+        case(null(let lhsNullField), null(let rhsNullField)):
+            return lhsNullField == rhsNullField
+
+        case(boolean(let lhsBooleanField), boolean(let rhsBooleanField)):
+            return lhsBooleanField == rhsBooleanField
+
+        case(integer(let lhsIntegerField), integer(let rhsIntegerField)):
+            return lhsIntegerField == rhsIntegerField
+
+        case(string(let lhsStringField), string(let rhsStringField)):
+            return lhsStringField == rhsStringField
+
+        case(bytes(let lhsBytesField), bytes(let rhsBytesField)):
+            return lhsBytesField == rhsBytesField
+
+        case(cidLink(let lhsCIDLinkField), cidLink(let rhsCIDLinkField)):
+            return lhsCIDLinkField == rhsCIDLinkField
+
+        case(array(let lhsArrayField), array(let rhsArrayField)):
+            return lhsArrayField == rhsArrayField
+
+        case(object(let lhsObjectField), object(let rhsObjectField)):
+            return lhsObjectField == rhsObjectField
+
+        case(params(let lhsParamsField), params(let rhsParamsField)):
+            return lhsParamsField == rhsParamsField
+
+        case(token(let lhsTokenField), token(let rhsTokenField)):
+            return lhsTokenField == rhsTokenField
+
+        case(ref(let lhsRefField), ref(let rhsRefField)):
+            return lhsRefField == rhsRefField
+            
+        case(union(let lhsUnionField), union(let rhsUnionField)):
+            return lhsUnionField == rhsUnionField
+
+        case(unknown(let lhsUnknownField), unknown(let rhsUnknownField)):
+            return lhsUnknownField == rhsUnknownField
+            
+        default:
+            return false
+        }
+    }
+
+    public func hash(into hasher: inout Hasher) {
+        switch self {
+        case .null(let nullField):
+            hasher.combine(nullField)
+
+        case .boolean(let booleanField):
+            hasher.combine(booleanField)
+
+        case .integer(let integerField):
+            hasher.combine(integerField)
+
+        case .string(let stringField):
+            hasher.combine(stringField)
+
+        case .bytes(let bytesField):
+            hasher.combine(bytesField)
+
+        case .cidLink(let cidLinkField):
+            hasher.combine(cidLinkField)
+
+        case .array(let arrayField):
+            hasher.combine(arrayField)
+
+        case .object(let objectField):
+            hasher.combine(objectField)
+
+        case .params(let paramsField):
+            hasher.combine(paramsField)
+
+        case .token(let tokenField):
+            hasher.combine(tokenField)
+        
+        case .ref(let refField):
+            hasher.combine(refField)
+
+        case .union(let unionField):
+            hasher.combine(unionField)
+
+        case .unknown(let unknownField):
+            hasher.combine(unknownField)
+        }
+    }
+
     private enum FieldType: String, Decodable {
         case null
         case boolean
