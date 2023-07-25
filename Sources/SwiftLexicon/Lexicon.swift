@@ -7,13 +7,13 @@
 
 import Foundation
 
-protocol LexiconFieldTypeRepresentable: Decodable {
+protocol LexiconFieldTypeRepresentable: Decodable, Hashable {
     var description: String? { get }
 }
 
 protocol LexiconSchemaRepresentable: Decodable {}
 
-public struct LexiconNullField: LexiconFieldTypeRepresentable, Hashable {
+public struct LexiconNullField: LexiconFieldTypeRepresentable {
     private enum CodingKeys: CodingKey {
         case description
     }
@@ -21,7 +21,7 @@ public struct LexiconNullField: LexiconFieldTypeRepresentable, Hashable {
     public let description: String?
 }
 
-public struct LexiconBooleanField: LexiconFieldTypeRepresentable, Hashable {
+public struct LexiconBooleanField: LexiconFieldTypeRepresentable {
     private enum CodingKeys: CodingKey {
         case description
         case `default`
@@ -33,7 +33,7 @@ public struct LexiconBooleanField: LexiconFieldTypeRepresentable, Hashable {
     public let const: Bool?
 }
 
-public struct LexiconIntegerField: LexiconFieldTypeRepresentable, Hashable {
+public struct LexiconIntegerField: LexiconFieldTypeRepresentable {
     public let description: String?
     public let minimum: Int?
     public let maxmimum: Int?
@@ -42,7 +42,7 @@ public struct LexiconIntegerField: LexiconFieldTypeRepresentable, Hashable {
     public let const: Int?
 }
 
-public struct LexiconStringField: LexiconFieldTypeRepresentable, Hashable {
+public struct LexiconStringField: LexiconFieldTypeRepresentable {
     public let description: String?
     public let format: String?
     public let maxLength: Int?
@@ -55,13 +55,13 @@ public struct LexiconStringField: LexiconFieldTypeRepresentable, Hashable {
     public let const: String?
 }
 
-public struct LexiconBytesField: LexiconFieldTypeRepresentable, Hashable {
+public struct LexiconBytesField: LexiconFieldTypeRepresentable {
     public let description: String?
     public let maxLength: Int?
     public let minLength: Int?
 }
 
-public struct LexiconCIDLinkField: LexiconFieldTypeRepresentable, Hashable {
+public struct LexiconCIDLinkField: LexiconFieldTypeRepresentable {
     public let description: String?
 }
 
@@ -116,14 +116,14 @@ public enum LexiconSchemaField: Decodable, Hashable {
     }
 }
 
-public struct LexiconArrayField: LexiconFieldTypeRepresentable, Hashable {
+public struct LexiconArrayField: LexiconFieldTypeRepresentable {
     public let description: String?
     public let items: LexiconSchemaField
     public let maxLength: Int?
     public let minLength: Int?
 }
 
-public struct LexiconObjectField: LexiconFieldTypeRepresentable, LexiconSchemaRepresentable, Hashable {
+public struct LexiconObjectField: LexiconFieldTypeRepresentable, LexiconSchemaRepresentable {
     public let description: String?
     public let properties: [String : LexiconFieldType]
     public let required: [String]?
@@ -136,7 +136,7 @@ public struct LexiconBlobField: LexiconFieldTypeRepresentable {
     public let maxSize: Int?
 }
 
-public struct LexiconParamsField: LexiconFieldTypeRepresentable, Hashable {
+public struct LexiconParamsField: LexiconFieldTypeRepresentable {
     public let description: String?
     public let required: [String]?
 
@@ -144,22 +144,22 @@ public struct LexiconParamsField: LexiconFieldTypeRepresentable, Hashable {
     public let properties: [String : LexiconFieldType]
 }
 
-public struct LexiconTokenField: LexiconFieldTypeRepresentable, Hashable {
+public struct LexiconTokenField: LexiconFieldTypeRepresentable {
     public let description: String?
 }
 
-public struct LexiconRefField: LexiconFieldTypeRepresentable, LexiconSchemaRepresentable, Hashable {
+public struct LexiconRefField: LexiconFieldTypeRepresentable, LexiconSchemaRepresentable {
     public let description: String?
     public let ref: String
 }
 
-public struct LexiconUnionField: LexiconFieldTypeRepresentable, LexiconSchemaRepresentable, Hashable {
+public struct LexiconUnionField: LexiconFieldTypeRepresentable, LexiconSchemaRepresentable {
     public let description: String?
     public let refs: [String]
     public let closed: Bool?
 }
 
-public struct LexiconUnknownField: LexiconFieldTypeRepresentable, Hashable {
+public struct LexiconUnknownField: LexiconFieldTypeRepresentable {
     public let description: String?
 }
 
