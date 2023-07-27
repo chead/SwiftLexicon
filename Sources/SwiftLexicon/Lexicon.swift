@@ -7,13 +7,13 @@
 
 import Foundation
 
-protocol LexiconFieldTypeRepresentable: Decodable, Hashable {
+protocol LexiconFieldRepresentable: Decodable, Hashable {
     var description: String? { get }
 }
 
 protocol LexiconSchemaRepresentable: Decodable {}
 
-public struct LexiconNullField: LexiconFieldTypeRepresentable {
+public struct LexiconNullField: LexiconFieldRepresentable {
     private enum CodingKeys: CodingKey {
         case description
     }
@@ -21,7 +21,7 @@ public struct LexiconNullField: LexiconFieldTypeRepresentable {
     public let description: String?
 }
 
-public struct LexiconBooleanField: LexiconFieldTypeRepresentable {
+public struct LexiconBooleanField: LexiconFieldRepresentable {
     private enum CodingKeys: CodingKey {
         case description
         case `default`
@@ -33,7 +33,7 @@ public struct LexiconBooleanField: LexiconFieldTypeRepresentable {
     public let const: Bool?
 }
 
-public struct LexiconIntegerField: LexiconFieldTypeRepresentable {
+public struct LexiconIntegerField: LexiconFieldRepresentable {
     public let description: String?
     public let minimum: Int?
     public let maxmimum: Int?
@@ -42,7 +42,7 @@ public struct LexiconIntegerField: LexiconFieldTypeRepresentable {
     public let const: Int?
 }
 
-public struct LexiconStringField: LexiconFieldTypeRepresentable {
+public struct LexiconStringField: LexiconFieldRepresentable {
     public let description: String?
     public let format: String?
     public let maxLength: Int?
@@ -55,116 +55,65 @@ public struct LexiconStringField: LexiconFieldTypeRepresentable {
     public let const: String?
 }
 
-public struct LexiconBytesField: LexiconFieldTypeRepresentable {
+public struct LexiconBytesField: LexiconFieldRepresentable {
     public let description: String?
     public let maxLength: Int?
     public let minLength: Int?
 }
 
-public struct LexiconCIDLinkField: LexiconFieldTypeRepresentable {
+public struct LexiconCIDLinkField: LexiconFieldRepresentable {
     public let description: String?
 }
 
-public enum LexiconSchemaField: Decodable, Hashable {
-    public static func == (lhs: LexiconSchemaField, rhs: LexiconSchemaField) -> Bool {
-        switch(lhs, rhs) {
-        case(ref(let lhsRefField), ref(let rhsRefField)):
-            return lhsRefField == rhsRefField
-
-        case(union(let lhsUnionField), union(let rhsUnionField)):
-            return lhsUnionField == rhsUnionField
-
-        default:
-            return false
-        }
-    }
-
-    public func hash(into hasher: inout Hasher) {
-        switch self {
-        case .ref(let refField):
-            hasher.combine(refField)
-
-        case .union(let unionField):
-            hasher.combine(unionField)
-        }
-    }
-
-    private enum FieldType: String, Decodable {
-        case ref
-        case union
-    }
-
-    private enum CodingKeys: CodingKey {
-        case type
-    }
-
-    case ref(LexiconRefField)
-    case union(LexiconUnionField)
-
-    public init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        let fieldType = try container.decode(FieldType.self, forKey: .type)
-        
-        let singleValueContainer = try decoder.singleValueContainer()
-
-        switch fieldType {
-        case .ref:
-            try self = .ref(singleValueContainer.decode(LexiconRefField.self))
-        case .union:
-            try self = .union(singleValueContainer.decode(LexiconUnionField.self))
-        }
-    }
-}
-
-public struct LexiconArrayField: LexiconFieldTypeRepresentable {    
+public struct LexiconArrayField: LexiconFieldRepresentable {    
     public let description: String?
-    public let items: LexiconFieldType
+    public let items: LexiconField
     public let maxLength: Int?
     public let minLength: Int?
 }
 
-public struct LexiconObjectField: LexiconFieldTypeRepresentable, LexiconSchemaRepresentable {
+public struct LexiconObjectField: LexiconFieldRepresentable, LexiconSchemaRepresentable {
     public let description: String?
-    public let properties: [String : LexiconFieldType]
+    public let properties: [String : LexiconField]
     public let required: [String]?
     public let nullable: [String]?
 }
 
-public struct LexiconBlobField: LexiconFieldTypeRepresentable {
+public struct LexiconBlobField: LexiconFieldRepresentable {
     public let description: String?
     public let accept: [String]?
     public let maxSize: Int?
 }
 
-public struct LexiconParamsField: LexiconFieldTypeRepresentable {
+public struct LexiconParamsField: LexiconFieldRepresentable {
     public let description: String?
     public let required: [String]?
 
     // Can only include the types boolean, integer, string, and unknown; or an array of one of these types
-    public let properties: [String : LexiconFieldType]
+    public let properties: [String : LexiconField]
 }
 
-public struct LexiconTokenField: LexiconFieldTypeRepresentable {
+public struct LexiconTokenField: LexiconFieldRepresentable {
     public let description: String?
 }
 
-public struct LexiconRefField: LexiconFieldTypeRepresentable, LexiconSchemaRepresentable {
+public struct LexiconRefField: LexiconFieldRepresentable, LexiconSchemaRepresentable {
     public let description: String?
     public let ref: String
 }
 
-public struct LexiconUnionField: LexiconFieldTypeRepresentable, LexiconSchemaRepresentable {
+public struct LexiconUnionField: LexiconFieldRepresentable, LexiconSchemaRepresentable {
     public let description: String?
     public let refs: [String]
     public let closed: Bool?
 }
 
-public struct LexiconUnknownField: LexiconFieldTypeRepresentable {
+public struct LexiconUnknownField: LexiconFieldRepresentable {
     public let description: String?
 }
 
-public indirect enum LexiconFieldType: Decodable, Hashable {
-    public static func == (lhs: LexiconFieldType, rhs: LexiconFieldType) -> Bool {
+public indirect enum LexiconField: Decodable, Hashable {
+    public static func == (lhs: LexiconField, rhs: LexiconField) -> Bool {
         switch(lhs, rhs) {
         case(null(let lhsNullField), null(let rhsNullField)):
             return lhsNullField == rhsNullField
