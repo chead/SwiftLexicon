@@ -116,9 +116,9 @@ public enum LexiconSchemaField: Decodable, Hashable {
     }
 }
 
-public struct LexiconArrayField: LexiconFieldTypeRepresentable {
+public struct LexiconArrayField: LexiconFieldTypeRepresentable {    
     public let description: String?
-    public let items: LexiconSchemaField
+    public let items: LexiconFieldType
     public let maxLength: Int?
     public let minLength: Int?
 }
@@ -163,7 +163,7 @@ public struct LexiconUnknownField: LexiconFieldTypeRepresentable {
     public let description: String?
 }
 
-public enum LexiconFieldType: Decodable, Hashable {
+public indirect enum LexiconFieldType: Decodable, Hashable {
     public static func == (lhs: LexiconFieldType, rhs: LexiconFieldType) -> Bool {
         switch(lhs, rhs) {
         case(null(let lhsNullField), null(let rhsNullField)):

@@ -9,30 +9,47 @@ import XCTest
 @testable import SwiftLexicon
 
 final class LexiconTests: XCTestCase {
-    func testGetTimeline() throws {
-        let getTimelineJSON =
+    func testGetPosts() throws {
+        let getPostsJSON =
         """
         {
           "lexicon": 1,
-          "id": "app.bsky.feed.like",
+          "id": "app.bsky.feed.getPosts",
           "defs": {
             "main": {
-              "type": "record",
-              "key": "tid",
-              "record": {
-                "type": "object",
+              "type": "query",
+              "description": "A view of an actor's feed.",
+              "parameters": {
+                "type": "params",
                 "required": [
-                  "subject",
-                  "createdAt"
+                  "uris"
                 ],
                 "properties": {
-                  "subject": {
-                    "type": "ref",
-                    "ref": "com.atproto.repo.strongRef"
-                  },
-                  "createdAt": {
-                    "type": "string",
-                    "format": "datetime"
+                  "uris": {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "format": "at-uri"
+                    },
+                    "maxLength": 25
+                  }
+                }
+              },
+              "output": {
+                "encoding": "application/json",
+                "schema": {
+                  "type": "object",
+                  "required": [
+                    "posts"
+                  ],
+                  "properties": {
+                    "posts": {
+                      "type": "array",
+                      "items": {
+                        "type": "ref",
+                        "ref": "app.bsky.feed.defs#postView"
+                      }
+                    }
                   }
                 }
               }
@@ -41,8 +58,8 @@ final class LexiconTests: XCTestCase {
         }
         """.data(using: .utf8)!
         
-        let lexicon = try JSONDecoder().decode(Lexicon.self, from: getTimelineJSON)
+        let lexicon = try JSONDecoder().decode(Lexicon.self, from: getPostsJSON)
 
-        XCTAssertEqual(lexicon.id, "app.bsky.feed.like")
+        XCTAssertEqual(lexicon.id, "app.bsky.feed.getPosts")
     }
 }
