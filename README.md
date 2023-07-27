@@ -1,3 +1,3 @@
 # SwiftLexicon
 
-A description of this package.
+A Swift package for decoding ATProto Lexicon.

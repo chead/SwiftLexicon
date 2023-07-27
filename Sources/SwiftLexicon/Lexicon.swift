@@ -372,7 +372,7 @@ public protocol LexiconHTTPRequestable {
     var parameters: LexiconParamsField? { get }
     var output: LexiconHTTPBodyDescription? { get }
     var input: LexiconHTTPBodyDescription? { get }
-    var errors: LexiconError? { get }
+    var errors: [LexiconError]? { get }
 }
 
 public struct LexiconQuery: LexiconPrimaryTypeRepresentable, LexiconHTTPRequestable, Decodable {
@@ -380,7 +380,7 @@ public struct LexiconQuery: LexiconPrimaryTypeRepresentable, LexiconHTTPRequesta
     public let parameters: LexiconParamsField?
     public let output: LexiconHTTPBodyDescription?
     public let input: LexiconHTTPBodyDescription?
-    public let errors: LexiconError?
+    public let errors: [LexiconError]?
 }
 
 public struct LexiconProcedure: LexiconPrimaryTypeRepresentable, LexiconHTTPRequestable, Decodable {
@@ -388,7 +388,7 @@ public struct LexiconProcedure: LexiconPrimaryTypeRepresentable, LexiconHTTPRequ
     public let parameters: LexiconParamsField?
     public let output: LexiconHTTPBodyDescription?
     public let input: LexiconHTTPBodyDescription?
-    public let errors: LexiconError?
+    public let errors: [LexiconError]?
 }
 
 public struct LexiconSubscriptionMessage: Decodable {
@@ -400,7 +400,7 @@ public struct LexiconSubscription: LexiconPrimaryTypeRepresentable, Decodable {
     public let description: String?
     public let parameters: LexiconParamsField?
     public let message: LexiconSubscriptionMessage?
-    public let errors: LexiconError?
+    public let errors: [LexiconError]?
 }
 
 public struct LexiconRecord: LexiconPrimaryTypeRepresentable, Decodable {
