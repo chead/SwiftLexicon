@@ -139,6 +139,9 @@ public indirect enum LexiconField: Decodable, Hashable {
         case(object(let lhsObjectField), object(let rhsObjectField)):
             return lhsObjectField == rhsObjectField
 
+        case(blob(let lhsBlobField), blob(let rhsBlobField)):
+            return lhsBlobField == rhsBlobField
+
         case(params(let lhsParamsField), params(let rhsParamsField)):
             return lhsParamsField == rhsParamsField
 
@@ -185,6 +188,9 @@ public indirect enum LexiconField: Decodable, Hashable {
         case .object(let objectField):
             hasher.combine(objectField)
 
+        case .blob(let blobField):
+            hasher.combine(blobField)
+
         case .params(let paramsField):
             hasher.combine(paramsField)
 
@@ -211,6 +217,7 @@ public indirect enum LexiconField: Decodable, Hashable {
         case cidLink = "cid-link"
         case array
         case object
+        case blob
         case params
         case token
         case ref
@@ -230,6 +237,7 @@ public indirect enum LexiconField: Decodable, Hashable {
     case cidLink(LexiconCIDLinkField)
     case array(LexiconArrayField)
     case object(LexiconObjectField)
+    case blob(LexiconBlobField)
     case params(LexiconParamsField)
     case token(LexiconTokenField)
     case ref(LexiconRefField)
@@ -266,6 +274,9 @@ public indirect enum LexiconField: Decodable, Hashable {
 
         case .object:
             try self = .object(singleValueContainer.decode(LexiconObjectField.self))
+
+        case .blob:
+            try self = .blob(singleValueContainer.decode(LexiconBlobField.self))
 
         case .params:
             try self = .params(singleValueContainer.decode(LexiconParamsField.self))
