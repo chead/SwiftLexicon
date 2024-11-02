@@ -331,7 +331,7 @@ public enum LexiconSchemaType: Decodable {
 public struct LexiconHTTPBodyDescription: Decodable {
     public let description: String?
     public let encoding: String
-    public let schema: LexiconSchemaType
+    public let schema: LexiconSchemaType?
 }
 
 public struct LexiconError: Decodable {
